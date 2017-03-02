@@ -63,8 +63,10 @@ public:
     //Set single bit, range checked, throws std::out_of_range
     bitset<N> &set(size_t whichOne)
     {
-        if (whichOne > this->m_numberOfBits) {
-            //throw std::out_of_range();
+        if (whichOne >= this->m_numberOfBits) {
+            char temp[255];
+            snprintf(temp, 255, "bitset<%zu>::set(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
+            throw std::out_of_range(temp);
         } else if (this->m_endian == Endian::LittleEndian) {
             this->m_underlyingValue |= 1 << (this->m_numberOfBits - whichOne - 1);
         } else {
@@ -73,9 +75,10 @@ public:
         return *this;
     }
 
-    //Sets multiple bits, from a passed in integer, throws std::runtime_exception
+    //Sets multiple bits, from a passed in integer, nothrow (if byte is too large, it is truncated to fit)
     bitset<N> &setMultiple(size_t whatByte)
     {
+        //TODO: Mask out unused bits
         for (int i = 0; i < this->m_numberOfBits; i++) {
             ((whatByte >> i) & 1) ? this->setBit(i) : this->resetBit(i);
         }
@@ -93,7 +96,9 @@ public:
     bitset<N> &reset(size_t whichOne)
     {
         if (whichOne > this->m_numberOfBits) {
-            //throw std::out_of_range();
+            char temp[255];
+            snprintf(temp, 255, "bitset<%zu>::reset(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
+            throw std::out_of_range(temp);
         } else if (this->m_endian == Endian::LittleEndian) {
             this->m_underlyingValue &= ~(1 << (this->m_numberOfBits - whichOne - 1));
         } else {
@@ -114,7 +119,9 @@ public:
     bitset<N> &flip(size_t whichOne)
     {
         if (whichOne > this->m_numberOfBits) {
-            //throw std::out_of_range();
+            char temp[255];
+            snprintf(temp, 255, "bitset<%zu>::flip(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
+            throw std::out_of_range(temp);
         }
         this->test(whichOne) ? this->reset(whichOne) : this->set(whichOne);
         return *this;
@@ -157,7 +164,9 @@ public:
     bool test(size_t whichOne) const
     {
         if (whichOne > this->m_numberOfBits) {
-            //throw std::out_of_range();
+            char temp[255];
+            snprintf(temp, 255, "bitset<%zu>::test(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
+            throw std::out_of_range(temp);
         } else if (this->m_endian == Endian::LittleEndian) {
             return static_cast<bool>((this->m_underlyingValue >> (this->m_numberOfBits - whichOne - 1)) & 1);
         } else {
@@ -216,6 +225,9 @@ public:
                     for (uint8_t spaceCount = 0; spaceCount < spacing; spaceCount++) {
                         strncat(out, " ", maximumSize);
                     }
+                }
+                if (i == 0) {
+                    break;
                 }
             }
         } else if (this->m_endian == Endian::BigEndian) {
