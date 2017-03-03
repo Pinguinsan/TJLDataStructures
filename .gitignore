@@ -4,6 +4,9 @@
 *.o
 *.obj
 
+# Visual Studio Code
+*.vscode
+
 # Precompiled Headers
 *.gch
 *.pch
