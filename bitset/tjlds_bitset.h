@@ -2,12 +2,18 @@
 #define TJLDATASTRUCTURES_BITSET_H
 
 #include <iostream>
+#include <string>
 #include <cstdint>
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
 
 namespace TJLDataStructures {
+
+#ifdef SMALL_BUFFER_SIZE
+    #undef SMALL_BUFFER_SIZE
+#endif
+    #define SMALL_BUFFER_SIZE 255
 
 enum Endian
 { 
@@ -26,7 +32,9 @@ public:
     {
         for (size_t i = 0; i < strlen(str); i++) {
             if ((str[i] != '0') && (str[i] != '1')) {
-                //throw std::runtime_error();
+                char temp[SMALL_BUFFER_SIZE];
+                snprintf(temp, SMALL_BUFFER_SIZE, "bitset<%zu>::bitset(%s): string contains formatting error (%c != (%c or %c) )", this->m_numberOfBits, str, str[i], '0', '1');
+                throw std::runtime_error(temp);
             } else {
                 if (str[i] == '1') {
                     this->set(i);
@@ -39,6 +47,7 @@ public:
         m_numberOfBits{N},
         m_underlyingValue{0},
         m_endian{endian}
+
     {
         this->setMultiple(initialValue);
     }
@@ -64,8 +73,8 @@ public:
     bitset<N> &set(size_t whichOne)
     {
         if (whichOne >= this->m_numberOfBits) {
-            char temp[255];
-            snprintf(temp, 255, "bitset<%zu>::set(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
+            char temp[SMALL_BUFFER_SIZE];
+            snprintf(temp, SMALL_BUFFER_SIZE, "bitset<%zu>::set(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
             throw std::out_of_range(temp);
         } else if (this->m_endian == Endian::LittleEndian) {
             this->m_underlyingValue |= 1 << (this->m_numberOfBits - whichOne - 1);
@@ -96,8 +105,8 @@ public:
     bitset<N> &reset(size_t whichOne)
     {
         if (whichOne > this->m_numberOfBits) {
-            char temp[255];
-            snprintf(temp, 255, "bitset<%zu>::reset(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
+            char temp[SMALL_BUFFER_SIZE];
+            snprintf(temp, SMALL_BUFFER_SIZE, "bitset<%zu>::reset(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
             throw std::out_of_range(temp);
         } else if (this->m_endian == Endian::LittleEndian) {
             this->m_underlyingValue &= ~(1 << (this->m_numberOfBits - whichOne - 1));
@@ -119,8 +128,8 @@ public:
     bitset<N> &flip(size_t whichOne)
     {
         if (whichOne > this->m_numberOfBits) {
-            char temp[255];
-            snprintf(temp, 255, "bitset<%zu>::flip(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
+            char temp[SMALL_BUFFER_SIZE];
+            snprintf(temp, SMALL_BUFFER_SIZE, "bitset<%zu>::flip(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
             throw std::out_of_range(temp);
         }
         this->test(whichOne) ? this->reset(whichOne) : this->set(whichOne);
@@ -164,8 +173,8 @@ public:
     bool test(size_t whichOne) const
     {
         if (whichOne > this->m_numberOfBits) {
-            char temp[255];
-            snprintf(temp, 255, "bitset<%zu>::test(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
+            char temp[SMALL_BUFFER_SIZE];
+            snprintf(temp, SMALL_BUFFER_SIZE, "bitset<%zu>::test(%zu): whichOne must be less than number of bits (%zu >= %zu)", this->m_numberOfBits, whichOne, whichOne, this->m_numberOfBits);
             throw std::out_of_range(temp);
         } else if (this->m_endian == Endian::LittleEndian) {
             return static_cast<bool>((this->m_underlyingValue >> (this->m_numberOfBits - whichOne - 1)) & 1);
@@ -175,7 +184,7 @@ public:
     }
     
     //Check single bit, non range checked
-    bool operator[](size_t whichOne)
+    bool operator[](size_t whichOne) const
     {
         if (this->m_endian == Endian::LittleEndian) {
             return static_cast<bool>((this->m_underlyingValue >> (this->m_numberOfBits - whichOne - 1)) & 1);
@@ -209,7 +218,7 @@ public:
     }
 
     //String representation
-    size_t toString(char *out, uint8_t spacing = 0)
+    size_t toString(char *out, uint8_t spacing = 0) const
     {
         char temp[2];
         size_t maximumSize = this->m_numberOfBits  + (spacing * (this->m_numberOfBits - 1)) + 1;
@@ -249,6 +258,14 @@ public:
         }
         return strlen(out);
     }
+    
+    //std::string representation
+    std::string toString(uint8_t spacing = 0) const
+    {
+        char temp[SMALL_BUFFER_SIZE];
+        this->toString(temp, spacing);
+        return static_cast<std::string>(temp);
+    }
 
     friend bool operator==(const bitset<N> &lhs, const bitset<N> &rhs)
     {
@@ -261,6 +278,11 @@ public:
             }
         }
         return true;
+    }
+
+    friend std::ostream& operator<<(std::ostream &lhs, const bitset<N> &rhs)
+    {
+        return (lhs << rhs.toString());
     }
 
 private:
