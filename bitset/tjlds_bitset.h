@@ -285,6 +285,39 @@ public:
         return (lhs << rhs.toString());
     }
 
+/*
+member functions	
+
+bitset& operator&= (const bitset& rhs);
+bitset& operator|= (const bitset& rhs);
+bitset& operator^= (const bitset& rhs);
+bitset& operator<<= (size_t pos);
+bitset& operator>>= (size_t pos);
+bitset operator~() const;
+bitset operator<<(size_t pos) const;
+bitset operator>>(size_t pos) const;
+bool operator== (const bitset& rhs) const;
+bool operator!= (const bitset& rhs) const;
+
+non-member functions	
+
+template<size_t N>
+  bitset<N> operator& (const bitset<N>& lhs, const bitset<N>& rhs);
+template<size_t N>
+  bitset<N> operator| (const bitset<N>& lhs, const bitset<N>& rhs);
+template<size_t N>
+  bitset<N> operator^ (const bitset<N>& lhs, const bitset<N>& rhs);
+
+iostream inserters/extractors	
+
+template<class charT, class traits, size_t N>
+  basic_istream<charT, traits>&
+    operator>> (basic_istream<charT,traits>& is, bitset<N>& rhs);
+template<class charT, class traits, size_t N>
+  basic_ostream<charT, traits>&
+    operator<< (basic_ostream<charT,traits>& os, const bitset<N>& rhs);
+     */
+
 private:
     size_t m_numberOfBits;
     size_t m_underlyingValue;
