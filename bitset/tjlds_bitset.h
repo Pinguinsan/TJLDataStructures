@@ -267,56 +267,85 @@ public:
         return static_cast<std::string>(temp);
     }
 
-    friend bool operator==(const bitset<N> &lhs, const bitset<N> &rhs)
+    //&= operator overload
+    bitset<N> &operator&= (const bitset<N> &rhs)
     {
-        if (lhs.size() != rhs.size()) {
+        size_t minimumSize{this->size() < rhs.size() ? this->size() : rhs.size()};
+        for (size_t i = 0; i < minimumSize; i++) {
+            (rhs[i] && this[i]) ? this->set(i) : this->reset(i);
+        } 
+        return *this;
+    }
+
+    //|= operator overload
+    bitset<N> &operator|= (const bitset<N> &rhs)
+    {
+        size_t minimumSize{this->size() < rhs.size() ? this->size() : rhs.size()};
+        for (size_t i = 0; i < minimumSize; i++) {
+            (rhs[i] || this[i]) ? this->set(i) : this->reset(i);
+        }
+        return *this; 
+    }
+
+    //^= operator overload
+    bitset<N> &operator^= (const bitset<N> &rhs)
+    {
+        size_t minimumSize{this->size() < rhs.size() ? this->size() : rhs.size()};
+        for (size_t i = 0; i < minimumSize; i++) { 
+            (rhs[i] != this[i]) ? this->set(i) : this->reset(i);
+        } 
+        return *this;
+    }
+
+    //<<= operator overload (bit shift, not extraction)
+    bitset<N> &operator<<= (size_t pos)
+    {
+        //TODO: Implement
+        return *this;
+    }
+
+    //>>= operator overload (bit shift, not insertion)
+    bitset<N> &operator>>= (size_t pos)
+    {
+        //TODO: Implement
+        return *this;
+    }
+
+    //<< operator overload (bit shift, not extraction)
+    bitset<N> operator<<(size_t pos) const
+    {
+        //TODO: Implement
+        return *this;
+    }
+
+    //>> operator overload (bit shift, not insertion)
+    bitset<N> operator>>(size_t pos) const
+    {
+        //TODO: Implement
+        return *this;
+    }
+
+    //~ operator overload (bitwise NOT)
+    bitset<N> &operator~()
+    {
+        this->flip();
+        return *this;
+    }
+
+    //Member operator ==
+    bool operator==(const bitset<N> &rhs)
+    {
+        if (this.size() != rhs.size()) {
             return false;
         }
-        for (size_t i = 0; i < lhs.sie(); i++) {
-            if (lhs.test(i) != rhs.test(i)) {
-                return false;
-            }
-        }
-        return true;
+        return (this.count() == rhs.count());
     }
 
-    friend std::ostream& operator<<(std::ostream &lhs, const bitset<N> &rhs)
+    //Member operator !=
+    bool operator!=(const bitset<N> &rhs)
     {
-        return (lhs << rhs.toString());
+        return !(*this == rhs);
     }
-
-/*
-member functions	
-
-bitset& operator&= (const bitset& rhs);
-bitset& operator|= (const bitset& rhs);
-bitset& operator^= (const bitset& rhs);
-bitset& operator<<= (size_t pos);
-bitset& operator>>= (size_t pos);
-bitset operator~() const;
-bitset operator<<(size_t pos) const;
-bitset operator>>(size_t pos) const;
-bool operator== (const bitset& rhs) const;
-bool operator!= (const bitset& rhs) const;
-
-non-member functions	
-
-template<size_t N>
-  bitset<N> operator& (const bitset<N>& lhs, const bitset<N>& rhs);
-template<size_t N>
-  bitset<N> operator| (const bitset<N>& lhs, const bitset<N>& rhs);
-template<size_t N>
-  bitset<N> operator^ (const bitset<N>& lhs, const bitset<N>& rhs);
-
-iostream inserters/extractors	
-
-template<class charT, class traits, size_t N>
-  basic_istream<charT, traits>&
-    operator>> (basic_istream<charT,traits>& is, bitset<N>& rhs);
-template<class charT, class traits, size_t N>
-  basic_ostream<charT, traits>&
-    operator<< (basic_ostream<charT,traits>& os, const bitset<N>& rhs);
-     */
 
 private:
     size_t m_numberOfBits;
@@ -324,6 +353,71 @@ private:
     Endian m_endian;
 
 };
+
+//Non-member operator ==
+template <size_t N>
+bool operator==(const bitset<N> &lhs, const bitset<N> &rhs)
+{
+    if (lhs.size() != rhs.size()) {
+        return false;
+    }
+    for (size_t i = 0; i < lhs.sie(); i++) {
+        if (lhs.test(i) != rhs.test(i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+//Non-member extraction operator <<
+template<typename charT, typename traits, size_t N>
+std::basic_ostream<charT, traits> &operator<< (std::basic_ostream<charT,traits>& os, const bitset<N> &rhs)
+{
+    return (os << rhs.toString());
+}
+
+//Non-member insertion operator >>
+template<typename charT, typename traits, size_t N>
+std::basic_istream<charT, traits> &operator>> (std::basic_istream<charT,traits>& is, const bitset<N> &rhs)
+{
+    return (is >> rhs.toString());
+}
+
+//Non-member operator & (AND)
+template <size_t N>
+bitset<N> operator& (const bitset<N> &lhs, const bitset<N> &rhs)
+{
+    bitset<N> returnBitset;
+    size_t minimumSize{lhs.size() < rhs.size() ? lhs.size() : rhs.size()};
+    for (size_t i = 0; i < minimumSize; i++) {
+        (lhs[i] && rhs[i]) ? returnBitset.set(i) : returnBitset.reset(i);
+    }
+    return returnBitset;
+}
+
+//Non-member operator | (OR)
+template <size_t N>
+bitset<N> operator| (const bitset<N> &lhs, const bitset<N> &rhs)
+{
+    bitset<N> returnBitset;
+    size_t minimumSize{lhs.size() < rhs.size() ? lhs.size() : rhs.size()};
+    for (size_t i = 0; i < minimumSize; i++) {
+        (lhs[i] || rhs[i]) ? returnBitset.set(i) : returnBitset.reset(i);
+    }
+    return returnBitset;
+}
+
+//Non-member operator ^ (XOR)
+template <size_t N>
+bitset<N> operator^ (const bitset<N> &lhs, const bitset<N> &rhs)
+{
+    bitset<N> returnBitset;
+    size_t minimumSize{lhs.size() < rhs.size() ? lhs.size() : rhs.size()};
+    for (size_t i = 0; i < minimumSize; i++) {
+        (lhs[i] != rhs[i]) ? returnBitset.set(i) : returnBitset.reset(i);
+    }
+    return returnBitset;
+}
 
 } //TJLDataStructures
 

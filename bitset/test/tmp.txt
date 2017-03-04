@@ -1,0 +1,13 @@
+
+easyg++, v0.2.0
+Written by Tyler Lewis, 2017
+Built with g++ v6.3.1, 3-03-2017
+
+Using configuration file "/home/pinguinsan/.easygpp/easygpp.config"
+Executing below statement:
+    g++ -Wall -Wextra -Wpedantic -mtune=generic -fsanitize=undefined -frecord-gcc-switches -ggdb -std=c++14 -o "bitset_test" "bitset_test.cpp" 
+
+Source file: "bitset_test.cpp"
+
+compiled successfully to make executable file "bitset_test"
+
