@@ -64,7 +64,7 @@ public:
     bitset<N> &set()
     {
         for (size_t i = 0; i < this->m_numberOfBits; i++) {
-            this->setBit(i);
+            this->set(i);
         }
         return *this;
     }
@@ -89,7 +89,7 @@ public:
     {
         //TODO: Mask out unused bits
         for (int i = 0; i < this->m_numberOfBits; i++) {
-            ((whatByte >> i) & 1) ? this->setBit(i) : this->resetBit(i);
+            ((whatByte >> i) & 1) ? this->set(i) : this->reset(i);
         }
         return *this;
     }
